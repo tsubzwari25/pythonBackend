@@ -1,6 +1,6 @@
 import tornado.web
 import tornado.ioloop
-
+import json
 
 class BasicRequestHandler(tornado.web.RequestHandler):
 
@@ -12,12 +12,44 @@ class listRequestHandler(tornado.web.RequestHandler):
     def get(self):
         self.render("index.html")
 
+class queryParamRequestHandler(tornado.web.RequestHandler):
+
+    def get(self):
+        num = self.get_argument("num")
+        if(num.isdigit()):
+            r = "odd" if int(num) %2 else "even"
+            self.write(f"The integer {num} is {r}")
+        else:
+            self.write("Num is not a valid integer")
+
+
+
+class resourceParamRequestHandler(tornado.web.RequestHandler):
+    def get(self, studentName, courseId):
+        self.write(f"Welcome {studentName} the course you are viewing is {courseId}")
+
+class fileRequstHandler(tornado.web.RequestHandler):
+    def get(self):
+        fh = open("list.txt", "r")
+        fruits = fh.read().splitlines()
+        fh.close()
+        self.write(json.dumps(fruits))
+    def post(self):
+        fruit = self.get_argument("fruit")
+        fh = open("list.txt", "a")
+        fh.write(f"{fruit}\n")
+        self.write(json.dumps({"message": "Fruits added successfully"}))
+        
+
 
 
 if __name__ == "__main__":
     app = tornado.web.Application([
         (r"/",BasicRequestHandler),
-        (r"/animal",listRequestHandler)
+        (r"/animal",listRequestHandler),
+        (r"/isEven", queryParamRequestHandler),
+        (r"/students/([a-z]+)/([0-9]+)", resourceParamRequestHandler),
+        (r"/list", fileRequstHandler)
     ])
 
     port  = 8882
