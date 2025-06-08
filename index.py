@@ -2,6 +2,12 @@ import tornado.web
 import tornado.ioloop
 import json
 
+class mainReqeustHandler(tornado.web.RequestHandler):
+
+    def get(self):
+        self.render("index.html")
+
+
 class BasicRequestHandler(tornado.web.RequestHandler):
 
     def get(self):
@@ -49,7 +55,8 @@ if __name__ == "__main__":
         (r"/animal",listRequestHandler),
         (r"/isEven", queryParamRequestHandler),
         (r"/students/([a-z]+)/([0-9]+)", resourceParamRequestHandler),
-        (r"/list", fileRequstHandler)
+        (r"/list", fileRequstHandler),
+        (r"/main", mainReqeustHandler)
     ])
 
     port  = 8882
